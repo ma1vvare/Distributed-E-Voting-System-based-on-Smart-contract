@@ -1,0 +1,15 @@
+{
+    "bank2": {
+        "address": "0xd6fb56b1cea392e5ede4c2ad5b33d352e5fbdfc2"
+    },
+    "bank4": {
+        "address": "0x77d66fd0f06b36a31ddbbc449ce8c8f17fdf4d9a"
+    },
+    "bank5": {
+        "address": "0xf7eb912dcdc5006defc13c5de24db188003aba9e"
+    },
+    "gen": {
+        "address": "0x7938b4e384715529be3a68e0566b2e21f004b63e"
+    },
+    "coinbase": "0x5b49107140eccd4a2a9625ae7589f0d207b396da"
+}

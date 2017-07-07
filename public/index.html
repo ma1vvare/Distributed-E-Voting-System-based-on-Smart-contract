@@ -1,0 +1,303 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <style>
+    span {
+      color: red;
+    }
+
+    pre {
+      background: #E0F2F7;
+    }
+
+    label {
+      background: #E0F2F7;
+    }
+
+    #part1 {
+      width: 200px;
+      line-height: 50px;
+      padding: 20px;
+      border: 2px green solid;
+      float: left;
+    }
+
+    #part2 {
+      width: 200px;
+      line-height: 23.5px;
+      padding: 20px;
+      border: 2px green solid;
+      float: left;
+    }
+
+    #part3 {
+      width: 200px;
+      line-height: 30px;
+      padding: 20px;
+      border: 2px green solid;
+      float: left;
+    }
+
+    #part4 {
+      width: 1000px;
+      line-height: 15px;
+      padding: 20px;
+      border: 2px blue solid;
+      float: left;
+    }
+  </style>
+</head>
+
+<body onload="showTime()">
+  <h4>Distributed E-Voting System based on smart contract</h4>
+  <div id="showbox"></div>
+  <div id="part1">
+    <input type="submit" value="初始化階段" id="initial">
+    <p>請輸入身分證字號</p>
+    <form action="javascript:alert( 'success submit ssn!' );" id="submitSSN">
+      <div>
+        <input type="text" id="SSN" maxlength="300">
+        <input type="submit">
+      </div>
+    </form>
+
+    <p>請輸入PID取得投票憑證</p>
+    <form action="javascript:alert( 'success submit PID!' );" id="submitPID">
+      <div>
+        <input type="text" id="PID" maxlength="300">
+        <input type="submit">
+      </div>
+    </form>
+    <input type="button" id="clone_PID" value="複製PID" onclick="GetPID()">
+  </div>
+  <div id="part2">
+    <p>請輸入Cert以及候選人號碼以取得選票簽章</p>
+    <form action="javascript:alert( 'success submit Cert and Candidate number!' );" id="submitCertNlamb">
+      <div>
+        <input type="text" id="Cert" maxlength="300">
+        <input type="text" id="lamb" maxlength="300">
+        <input type="submit">
+      </div>
+    </form>
+    <input type="button" id="clone_Cert" value="複製Cert" onclick="GetCert()">
+    <p>請輸入PID,選票簽章及候選人號碼進行投票</p>
+    <form action="javascript:alert( 'success submit ballot signature and Candidate number!' );" id="submitBSnlamb">
+      <div>
+        <input type="text" id="pid2">
+        <input type="text" id="bs">
+        <input type="text" id="bs_lamb">
+        <input type="submit">
+      </div>
+    </form>
+    <input type="button" id="clone_BS" value="複製BS" onclick="GetBS()">
+  </div>
+  <div id="part3">
+    <p>查詢已完成投票人數</p>
+    <input type="button" id="queryCounter" value="查詢投票人數" onclick="QueryNum()">
+    <p>查詢目前完成投票之PID</p>
+    <form action="javascript:alert( 'success request for number of votes' );" id="queryPIDList">
+      <div>
+        <input type="text" id="number">
+        <input type="submit">
+      </div>
+    </form>
+    <p>查詢選票資訊</p>
+    <input type="button" id="queryBallotInfo" value="查詢選票資訊" onclick="QueryBallotInfo()">
+    <p>進行開票</p>
+    <input type="button" id="openballot" value="開票" onclick="Openning()">
+  </div>
+  <div style="clear:both;"></div>
+  <!--這是用來清除上方的浮動效果-->
+  <span id="s1"></span>
+  <span id="s2"></span>
+  <script>
+    function showTime() {
+      var NowDate = new Date();
+      var y = NowDate.getFullYear();
+      var mon = NowDate.getMonth() + 1;
+      var d = NowDate.getDate();
+      var h = NowDate.getHours();
+      var m = NowDate.getMinutes();
+      var s = NowDate.getSeconds();　
+
+      $('#showbox').html(y + '年' + mon + '月' + d + '日' + h + '時' + m + '分' + s + '秒' + '(兩小時後可進行開票)');
+      setTimeout('showTime()', 1000);
+    }
+    //Openning phase
+    function Openning() {
+
+      $.post("http://localhost:3000/test8", {
+          raw_data: $("#queryBallotInformation").text().toString(),
+          //raw_data: 5000,
+        },
+        function(result) {
+          alert(result);
+          $('#openning').html(result.toString());
+        });
+    }
+    //Query ballot infomation
+    function QueryBallotInfo() {
+      $.post("http://localhost:3000/test7", {
+          //ssn: $("#SSN").val(),
+        },
+        function(result) {
+          alert(result);
+          $('#queryBallotInformation').html(result.toString());
+        });
+    }
+    //查詢已完成投票人數
+    function QueryNum() {
+      $.post("http://localhost:3000/test6", {
+          ssn: $("#SSN").val(),
+        },
+        function(result) {
+          alert(result);
+          $('#queryCount').html(result.toString());
+        });
+    }
+    //clone PID
+    function GetPID() {
+      $("#PID").val($("#PID_Result").text().toString());
+      $("#pid2").val($("#PID_Result").text().toString());
+    }
+    //clone Cert
+    function GetCert() {
+      $("#Cert").val($("#Cert_Result").text().toString());
+      $("#Cert2").val($("#Cert_Result").text().toString());
+    }
+    //clone ballot signature
+    function GetBS() {
+      $("#bs").val($("#ballotSignature").text().toString());
+    }
+
+    //intital key generation
+    $("#initial").click(function() {
+      $.post("http://localhost:3000/test0")
+      alert("已完成初始化產生系統金鑰階段");
+    });
+    // SSN
+    $("#submitSSN").submit(function(event) {
+      $.post("http://localhost:3000/test1", {
+          ssn: $("#SSN").val(),
+        },
+        function(result) {
+          alert("PID : " + result);
+          $('#PID_Result').html(result.toString());
+        });
+      return;
+      //}
+      $("#log").text("Not valid!").show().fadeOut(1000);
+      event.preventDefault();
+    });
+    // PID
+    $("#submitPID").submit(function(event) {
+      $.post("http://localhost:3000/test2", {
+          pid: $("#PID").val(),
+        },
+        function(result) {
+          if (result.toString() == "您已取過憑證") {
+            alert(result.toString());
+          } else {
+            alert("投票憑證 : " + result);
+            $('#Cert_Result').html(result.toString());
+          }
+        });
+      return;
+      //}
+      $("#log").text("Not valid!").show().fadeOut(1000);
+      event.preventDefault();
+    });
+    //get ballot signature via 1-out-of-n oblivious transfer
+    $("#submitCertNlamb").submit(function(event) {
+      $.post("http://localhost:3000/test3", {
+          cert: $("#Cert").val(),
+          lamb: $("#lamb").val()
+        },
+        function(result) {
+          if (result.toString() == "您已取過選票簽章") {
+            alert(result.toString());
+          } else {
+            alert("選票簽章 : " + result);
+            $('#ballotSignature').html(result.toString());
+          }
+
+        });
+      return;
+      //}
+      $("#log").text("Not valid!").show().fadeOut(1000);
+      event.preventDefault();
+    });
+    //Voting
+    $("#submitBSnlamb").submit(function(event) {
+      $.post("http://localhost:3000/test4", {
+          pid: $("#PID").val(),
+          bs: $("#bs").val(),
+          lamb: $("#bs_lamb").val()
+        },
+        function(result) {
+          alert(result);
+          $('#ballot_coordinate').html(result.toString());
+        });
+      return;
+      //}
+      $("#log").text("Not valid!").show().fadeOut(1000);
+      event.preventDefault();
+    });
+    //查詢目前完成投票之PID清單
+    $("#queryPIDList").submit(function(event) {
+      $.post("http://localhost:3000/test5", {
+          num: $("#number").val(),
+        },
+        function(result) {
+          alert(result);
+          $('#queryPID').html(result.toString());
+        });
+      return;
+      //}
+      $("#log").text("Not valid!").show().fadeOut(1000);
+      event.preventDefault();
+    });
+  </script>
+  <div id="part4">
+    <h4>執行結果 : </h4>
+    <pre id="log"></pre>
+    <div>
+      <h5>虛擬身份PID:</h5>
+      <pre type="text" id=PID_Result></pre>
+    </div>
+    <div>
+      <h5>投票憑證Cert:</h5>
+      <pre type="text" id=Cert_Result></pre>
+    </div>
+    <div>
+      <h5>選票簽章及金鑰對:</h5>
+      <pre type="text" id=ballotSignature maxlength="1000"></pre>
+
+    </div>
+    <div>
+      <h5>投票之秘密共享選票資訊:</h5>
+      <pre type="text" id=ballot_coordinate></pre>
+    </div>
+    <div>
+      <h5>已投完票之人數:</h5>
+      <pre type="text" id=queryCount></pre>
+    </div>
+    <div>
+      <h5>已投完票之PID清單:</h5>
+      <pre type="text" id=queryPID></pre>
+    </div>
+    <div>
+      <h5>查詢選票資訊:</h5>
+      <pre type="text" id=queryBallotInformation></pre>
+    </div>
+    <div>
+      <h5>開票結果:</h5>
+      <pre type="text" id=openning></pre>
+    </div>
+
+  </div>
+</body>
+
+</html>
